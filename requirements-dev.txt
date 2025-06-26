@@ -1,0 +1,33 @@
+# Include all production requirements
+-r requirements.txt
+
+# Additional development dependencies
+jupyter>=1.0.0
+ipykernel>=6.0.0
+notebook>=6.4.0
+
+# Documentation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0
+myst-parser>=0.18.0
+
+# Code quality and formatting
+pre-commit>=2.20.0
+isort>=5.10.0
+bandit>=1.7.0
+
+# Testing and coverage
+pytest-xdist>=2.5.0
+pytest-benchmark>=4.0.0
+coverage>=6.0.0
+
+# Type checking
+types-PyYAML>=6.0.0
+types-requests>=2.28.0
+
+# Profiling and debugging
+line-profiler>=3.5.0
+memory-profiler>=0.60.0
+
+# CUDA development tools
+nvidia-nsight-compute>=2022.1.0

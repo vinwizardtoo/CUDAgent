@@ -125,6 +125,7 @@ Inspired by [Sakana AI's AI CUDA Engineer](https://sakana.ai/ai-cuda-engineer/),
 - CUDA Toolkit 11.0+
 - Python 3.8+
 - PyTorch 1.12+
+- **NumPy < 2.0** (for compatibility with PyTorch)
 
 ### Installation
 
