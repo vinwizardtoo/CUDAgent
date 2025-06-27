@@ -1,303 +1,306 @@
 # CUDAgent Testing Guide
 
-This guide explains how to test the CUDAgent PyTorch to CUDA translator system on both CUDA-enabled and CPU-only systems.
+This document provides comprehensive testing instructions for the CUDAgent AI Agent Framework, which uses Large Language Models (LLMs) to optimize CUDA kernels for GPU applications.
+
+## Overview
+
+CUDAgent provides two main optimization approaches:
+
+1. **AI Agent Framework** - LLM-powered optimization using OpenAI, Anthropic, or local providers
+2. **Traditional Optimizers** - Evolutionary algorithm-based optimization (examples in `cudagent/core/`)
 
 ## Prerequisites
 
-### For CUDA Testing
-- NVIDIA GPU with CUDA support
-- CUDA Toolkit (version 11.0 or higher)
-- PyTorch with CUDA support
-- All dependencies from `requirements.txt`
+### System Requirements
+- Python 3.8+
+- CUDA-compatible GPU (optional, for actual kernel execution)
+- Internet connection (for LLM API access)
 
-### For CPU Testing
-- Any system with Python 3.8+
-- PyTorch (CPU version is fine)
-- All dependencies from `requirements.txt`
-
-## Environment Setup
-
-1. **Activate your conda environment:**
-   ```bash
-   conda activate cudagent
-   ```
-
-2. **Verify PyTorch installation:**
-   ```bash
-   python -c "import torch; print(f'PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
-   ```
-
-## Quick Start - Testing Commands
-
-### 🖥️ CPU Testing (Works on any system)
+### Dependencies
 ```bash
-# Test the enhanced system on CPU
-python test_enhanced_cudagent_cpu.py
-
-# Test basic functionality on CPU
-python test_cudagent.py
+pip install -r requirements.txt
 ```
 
-### 🎮 CUDA Testing (Requires NVIDIA GPU)
+### API Key Setup
+Before testing the AI agents, you need to set up API keys:
+
 ```bash
-# Test the enhanced system on CUDA
-python test_enhanced_cudagent.py
+python setup_api_keys.py
 ```
 
-## Detailed Testing Options
-
-### Option 1: CPU-Only Testing (Recommended for most users)
-
-**Command:**
+Or set environment variables:
 ```bash
-python test_enhanced_cudagent_cpu.py
+export OPENAI_API_KEY="your-openai-key"
+export ANTHROPIC_API_KEY="your-anthropic-key"
 ```
 
-**What this tests:**
-- ✅ Operation capture system
-- ✅ Enhanced parser analysis
-- ✅ Kernel generation (without actual CUDA execution)
-- ✅ Enhanced optimizer analysis
-- ✅ All core functionality without requiring CUDA
+## Testing the AI Agent Framework
 
-**Expected Output:**
-```
-🚀 Enhanced CUDAgent PyTorch to CUDA Translator Tests (CPU Version)
-============================================================
-✅ PyTorch version: 2.2.2
-✅ CUDA available: False
-⚠️  Running in CPU-only mode (CUDA not available)
+### Quick Start Test
+Run the comprehensive AI agent test suite:
 
-============================================================
-TEST 1: Operation Capture System Demo
-============================================================
-Capturing operations...
-✅ Captured matmul: Atorch.Size([100, 200]) @ Btorch.Size([200, 150]) -> torch.Size([100, 150])
-✅ Captured add: torch.Size([100, 150]) + torch.Size([100, 150]) -> torch.Size([100, 150])
-✅ Captured relu: torch.Size([100, 150]) -> torch.Size([100, 150])
-
-Operation History (3 operations):
-  1. matmul: [torch.Size([100, 200]), torch.Size([200, 150])] -> torch.Size([100, 150])
-     Device: cpu, Dtype: torch.float32
-     Parameters: {'A_shape': torch.Size([100, 200]), 'B_shape': torch.Size([200, 150]), 'M': 100, 'K': 200, 'N': 150, 'transpose_A': False, 'transpose_B': False}
-```
-
-### Option 2: CUDA Testing (For NVIDIA GPU users)
-
-**Command:**
 ```bash
-python test_enhanced_cudagent.py
+python test_ai_agents.py
 ```
 
-**What this tests:**
-- ✅ All CPU features PLUS actual CUDA execution
-- ✅ Real performance benchmarking
-- ✅ Speedup measurements
-- ✅ Actual CUDA kernel compilation and execution
+This will test:
+- ✅ Configuration management and API key detection
+- ✅ LLM agent with real API calls
+- ✅ Kernel optimization agent
+- ✅ Performance advisor agent
+- ✅ Validation agent
+- ✅ Integrated workflow
 
-**Expected Output:**
+### Expected Output
 ```
-🚀 Enhanced CUDAgent PyTorch to CUDA Translator Tests
+🚀 AI Agent Framework Tests
 ============================================================
-✅ CUDA available: NVIDIA GeForce RTX 3080
-✅ PyTorch version: 2.2.2
 
-============================================================
-TEST 1: Enhanced Matrix Multiplication Optimization
-============================================================
-Input shapes: A(512, 1024), B(1024, 256)
-Expected output shape: (512, 256)
+✅ Configuration Manager: API keys detected
+✅ LLM Agent: Real kernel generation with GPT-4
+✅ Kernel Optimization: Parameter tuning and strategies
+✅ Performance Advisor: Bottleneck analysis and recommendations
+✅ Validation Agent: Code validation and best practices
+✅ Integration: Complete workflow from analysis to validation
 
-Capturing and optimizing matmul operation...
-✅ Optimization successful!
-   Speedup: 2.45x
-   Original time: 0.000156s
-   Optimized time: 0.000064s
-   Optimization time: 0.12s
-
-Operation Analysis:
-   Type: matmul
-   Complexity: high
-   Parallelization: 2D_grid
-   Optimization opportunities: ['high_parallelization', 'mixed_precision']
-
-Captured Operation Details:
-   Function: matmul
-   Input shapes: [torch.Size([512, 1024]), torch.Size([1024, 256])]
-   Output shape: torch.Size([512, 256])
-   Device: cuda:0
-
-Generated Kernel Info:
-   Kernel length: 1503 characters
-   Contains shared memory: True
-   Contains optimization comments: True
+📁 Generated Files Summary:
+   Generated kernels: X files in generated_kernels/
+   Optimization logs: X files in logs/optimizations/
 ```
 
-### Option 3: Basic Functionality Testing
+### Generated Files
+After running tests, check:
+- `generated_kernels/` - Actual CUDA kernels generated by LLMs
+- `logs/optimizations/` - Detailed JSON logs with metadata
 
-**Command:**
-```bash
-python test_cudagent.py
+## Testing Individual Components
+
+### 1. Configuration Manager
+```python
+from cudagent.agents import ConfigManager
+
+config = ConfigManager()
+config.print_configuration_summary()
 ```
 
-**What this tests:**
-- ✅ Basic optimizer functionality
-- ✅ Simple tensor analysis
-- ✅ Core system components
+### 2. LLM Agent
+```python
+from cudagent.agents import LLMOptimizationAgent, OptimizationRequest
 
-## Testing Commands Summary
-
-| Test Type | Command | Requirements | What it tests |
-|-----------|---------|--------------|---------------|
-| **CPU Enhanced** | `python test_enhanced_cudagent_cpu.py` | Any system | Full enhanced system (no CUDA execution) |
-| **CUDA Enhanced** | `python test_enhanced_cudagent.py` | NVIDIA GPU + CUDA | Full enhanced system with CUDA execution |
-| **Basic** | `python test_cudagent.py` | Any system | Basic functionality only |
-
-## Test Components Explained
-
-### 1. Operation Capture System
-- **What it does:** Captures real PyTorch operations with full context
-- **Tests:** `test_operation_capture_demo()`
-- **Key features:**
-  - Records function name, input shapes, output shapes
-  - Extracts operation-specific parameters
-  - Maintains operation history
-
-### 2. Enhanced Parser
-- **What it does:** Analyzes captured operations for optimization opportunities
-- **Tests:** `test_enhanced_parser_analysis()`
-- **Key features:**
-  - Determines operation type (matmul, conv2d, add, etc.)
-  - Calculates computational complexity
-  - Identifies optimization strategies
-
-### 3. Enhanced Kernel Generator
-- **What it does:** Generates optimized CUDA kernels based on operation analysis
-- **Tests:** `test_enhanced_kernel_generation()`
-- **Key features:**
-  - Dynamic block/grid size optimization
-  - Shared memory usage
-  - Operation-specific optimizations
-
-### 4. Enhanced Optimizer
-- **What it does:** Orchestrates the entire optimization pipeline
-- **Tests:** `test_enhanced_optimizer_analysis()`
-- **Key features:**
-  - End-to-end optimization workflow
-  - Performance benchmarking
-  - Speedup calculation
-
-## Understanding Test Output
-
-### Operation Type Detection
-The system correctly identifies operation types:
+agent = LLMOptimizationAgent()
+request = OptimizationRequest(
+    operation_type="matmul",
+    operation_info={"tensor_info": {...}},
+    optimization_goals=["maximize performance"]
+)
+response = agent.optimize_kernel(request)
 ```
-Operation type: matmul
+
+### 3. Kernel Optimization Agent
+```python
+from cudagent.agents import KernelOptimizationAgent
+
+agent = KernelOptimizationAgent()
+params = agent.optimize_kernel_parameters(operation_info)
+strategies = agent.suggest_optimization_strategies(operation_info)
 ```
-This comes from the `__name__` attribute of the PyTorch function being captured.
 
-### Performance Metrics
-- **Speedup:** How much faster the optimized version is
-- **Original time:** Time for unoptimized PyTorch operation
-- **Optimized time:** Time for optimized CUDA kernel
-- **Optimization time:** Time spent generating the optimization
+### 4. Performance Advisor
+```python
+from cudagent.agents import PerformanceAdvisorAgent
 
-### Kernel Analysis
-- **Kernel length:** Size of generated CUDA code
-- **Shared memory:** Whether the kernel uses shared memory
-- **Optimization comments:** Whether the kernel includes optimization hints
+advisor = PerformanceAdvisorAgent()
+analysis = advisor.analyze_performance(operation_info)
+```
 
-## Troubleshooting
+### 5. Validation Agent
+```python
+from cudagent.agents import KernelValidationAgent
+
+validator = KernelValidationAgent()
+report = validator.validate_kernel(kernel_code, operation_info)
+```
+
+## Testing Traditional Optimizers (Examples)
+
+### Basic Optimizer
+```python
+from cudagent.core.optimizer import CUDAgentOptimizer
+
+optimizer = CUDAgentOptimizer()
+result = optimizer.optimize_operation(torch_tensor)
+```
+
+### Enhanced Optimizer
+```python
+from cudagent.core.enhanced_optimizer import EnhancedCUDAAgentOptimizer
+
+optimizer = EnhancedCUDAAgentOptimizer()
+result = optimizer.capture_and_optimize_operation(torch.matmul, A, B)
+```
+
+## Testing Scenarios
+
+### Scenario 1: Matrix Multiplication
+```python
+import torch
+from cudagent.agents import LLMOptimizationAgent, OptimizationRequest
+
+# Create test tensors
+A = torch.randn(512, 512, device='cuda')
+B = torch.randn(512, 512, device='cuda')
+
+# Test with AI agent
+agent = LLMOptimizationAgent()
+request = OptimizationRequest(
+    operation_type="matmul",
+    operation_info={
+        "tensor_info": {
+            "input_tensors": [
+                {"shape": A.shape, "dtype": str(A.dtype)},
+                {"shape": B.shape, "dtype": str(B.dtype)}
+            ],
+            "output_tensor": {"shape": (512, 512), "dtype": "float32"}
+        }
+    }
+)
+response = agent.optimize_kernel(request)
+```
+
+### Scenario 2: Convolution Operations
+```python
+# Test convolution optimization
+request = OptimizationRequest(
+    operation_type="conv2d",
+    operation_info={
+        "tensor_info": {
+            "input_tensors": [
+                {"shape": (1, 3, 224, 224), "dtype": "float32"},  # Input
+                {"shape": (64, 3, 7, 7), "dtype": "float32"}      # Kernel
+            ],
+            "output_tensor": {"shape": (1, 64, 218, 218), "dtype": "float32"}
+        }
+    }
+)
+```
+
+## Performance Testing
+
+### Benchmarking Generated Kernels
+```python
+from cudagent.profiling.benchmarker import PerformanceBenchmarker
+
+benchmarker = PerformanceBenchmarker()
+
+# Benchmark original PyTorch operation
+original_metrics = benchmarker.benchmark_operation(torch_operation)
+
+# Benchmark generated CUDA kernel
+kernel_metrics = benchmarker.benchmark_kernel(generated_kernel, operation_info)
+
+# Calculate speedup
+speedup = original_metrics["execution_time"] / kernel_metrics["execution_time"]
+print(f"Speedup: {speedup:.2f}x")
+```
+
+## Validation Testing
+
+### Kernel Validation
+```python
+from cudagent.agents import KernelValidationAgent
+
+validator = KernelValidationAgent()
+
+# Test different validation levels
+for level in ["basic", "intermediate", "advanced"]:
+    report = validator.validate_kernel(kernel_code, operation_info, level=level)
+    print(f"Level {level}: {report.overall_result.value}")
+```
+
+## Error Handling and Debugging
 
 ### Common Issues
 
-1. **CUDA not available:**
+1. **API Key Not Found**
    ```
-   ❌ CUDA is not available. Tests will be limited.
+   Error: No API key provided
+   Solution: Run python setup_api_keys.py or set environment variables
    ```
-   **Solution:** Use `python test_enhanced_cudagent_cpu.py` instead
 
-2. **Import errors:**
+2. **LLM Provider Unavailable**
    ```
-   ModuleNotFoundError: No module named 'cudagent'
+   Error: Provider openai not initialized
+   Solution: Install required packages: pip install openai
    ```
-   **Solution:** Make sure you're in the correct directory and conda environment is activated
 
-3. **PyTorch version issues:**
+3. **CUDA Not Available**
    ```
-   RuntimeError: Expected all tensors to be on the same device
+   Warning: CUDA is not available
+   Solution: Install CUDA toolkit or use CPU-only mode
    ```
-   **Solution:** Check PyTorch installation and CUDA compatibility
 
 ### Debug Mode
-
-To see detailed logging, set the log level:
+Enable detailed logging:
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-## Performance Expectations
-
-### CUDA Testing
-- **Speedup:** 2-5x for matrix operations
-- **Kernel generation:** <1 second
-- **Memory usage:** Varies by tensor size
-
-### CPU Testing
-- **Speedup:** Not applicable (no actual CUDA execution)
-- **Analysis time:** <1 second
-- **Memory usage:** Minimal
-
-## Advanced Testing
-
-### Custom Operations
-You can test custom operations by modifying the test files:
-
-```python
-# Test custom operation
-result = optimizer.capture_and_optimize_operation(
-    torch.special.exp, input_tensor
-)
-```
-
-### Different Tensor Sizes
-Test with various tensor dimensions:
-```python
-sizes = [(64, 64), (128, 128), (256, 256), (512, 512)]
-for M, N in sizes:
-    A = torch.randn(M, N, device='cuda')
-    B = torch.randn(N, M, device='cuda')
-    # Test optimization...
-```
-
-### Memory Profiling
-For detailed memory analysis, add memory profiling:
-```python
-import torch.profiler
-with torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CPU, torch.profiler.ProfilerActivity.CUDA]) as prof:
-    # Your test code here
-    pass
-print(prof.key_averages().table(sort_by="cuda_time_total"))
-```
-
 ## Continuous Integration
 
-For automated testing, you can run:
-```bash
-# Run all tests
-python -m pytest test_*.py -v
-
-# Run with coverage
-python -m pytest test_*.py --cov=cudagent --cov-report=html
+### GitHub Actions Example
+```yaml
+name: Test CUDAgent
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run AI agent tests
+        run: python test_ai_agents.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
 
-## Next Steps
+## Best Practices
 
-After successful testing:
-1. Review the generated CUDA kernels in the output
-2. Analyze the optimization opportunities identified
-3. Compare performance with different tensor sizes
-4. Explore the operation capture history for insights
+1. **Always test with real API keys** for production scenarios
+2. **Use generated logs** to debug optimization issues
+3. **Validate generated kernels** before deployment
+4. **Benchmark performance** to verify speedup claims
+5. **Test with domain-specific operations** relevant to your use case
 
-For more information, see the main [README.md](README.md) and [CONTRIBUTING.md](CONTRIBUTING.md) files. 
+## Troubleshooting
+
+### Test Failures
+1. Check API key configuration
+2. Verify internet connectivity
+3. Ensure all dependencies are installed
+4. Check CUDA availability if testing on GPU
+
+### Performance Issues
+1. Review generated kernel logs
+2. Check validation reports for warnings
+3. Compare with traditional optimizer results
+4. Analyze performance advisor recommendations
+
+## Support
+
+For issues with the AI Agent Framework:
+1. Check the generated logs in `logs/optimizations/`
+2. Review validation reports for specific issues
+3. Test with different operation types
+4. Verify API key configuration
+
+For traditional optimizer issues:
+1. Check CUDA installation
+2. Verify tensor shapes and data types
+3. Review optimization configuration
+4. Test with simpler operations first 
