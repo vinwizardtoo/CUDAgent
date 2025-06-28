@@ -594,6 +594,7 @@ Format as JSON with keys: bottlenecks, recommendations, priority_level
             json.dump(log_entry, f, indent=2)
 
         logger.info(f"Optimization log saved to {log_path}")
+        return log_path
 
     def save_kernel_with_log(self, request: OptimizationRequest, response: OptimizationResponse, 
                            kernel_directory: str = "generated_kernels", 
@@ -603,4 +604,7 @@ Format as JSON with keys: bottlenecks, recommendations, priority_level
         self.save_kernel(response, kernel_directory)
         
         # Save the detailed log
-        self.save_optimization_log(request, response, log_directory) 
+        self.save_optimization_log(request, response, log_directory)
+
+# Add backward compatibility alias
+LLMAgent = LLMOptimizationAgent 

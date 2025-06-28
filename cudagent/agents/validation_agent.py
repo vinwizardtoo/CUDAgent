@@ -593,4 +593,7 @@ Issues Found: {len(report.issues)}
 Top Recommendations:
 {chr(10).join(f"- {rec}" for rec in report.recommendations[:3])}
 """
-        return summary 
+        return summary
+
+# Add backward compatibility alias
+ValidationAgent = KernelValidationAgent 

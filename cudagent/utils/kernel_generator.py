@@ -544,31 +544,7 @@ __global__ void error_kernel(float* input, float* output, int size) {{
         else:
             return line 
 
-# Add backward compatibility alias at the end of the file
-class CUDAKernelGenerator(EnhancedCUDAKernelGenerator):
-    """
-    Backward compatibility alias for the original CUDAKernelGenerator.
-    This maintains compatibility with existing code while providing access to enhanced functionality.
-    """
-    
-    def generate_kernel(self, operation_info: Dict[str, Any]) -> str:
-        """
-        Generate a CUDA kernel (backward compatibility method).
-        This method is deprecated - use the enhanced generate_kernel with operation_analysis instead.
-        """
-        import warnings
-        warnings.warn(
-            "CUDAKernelGenerator.generate_kernel is deprecated. "
-            "Use EnhancedCUDAKernelGenerator.generate_kernel with operation_analysis instead.",
-            DeprecationWarning,
-            stacklevel=2
-        )
-        
-        # Convert old operation_info format to new operation_analysis format
-        operation_analysis = {
-            "operation_type": operation_info.get("operation_type", "generic"),
-            "operation_info": operation_info.get("operation_info", {}),
-            "tensor_info": operation_info.get("tensor_info", {}),
-        }
-        
-        return super().generate_kernel(operation_analysis) 
+# Add backward compatibility aliases
+KernelGenerator = EnhancedCUDAKernelGenerator
+EnhancedKernelGenerator = EnhancedCUDAKernelGenerator
+CUDAKernelGenerator = EnhancedCUDAKernelGenerator

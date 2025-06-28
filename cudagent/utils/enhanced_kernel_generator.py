@@ -542,4 +542,8 @@ __global__ void error_kernel(float* input, float* output, int size) {{
         elif "blockIdx" in line:
             return line.replace("blockIdx", "blockIdx_mutated")
         else:
-            return line 
+            return line
+
+# Add backward compatibility alias
+EnhancedKernelGenerator = EnhancedCUDAKernelGenerator
+

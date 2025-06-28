@@ -303,4 +303,8 @@ class PerformanceBenchmarker:
             "memory_total": psutil.virtual_memory().total,
         })
         
-        return info 
+        return info
+
+# Add backward compatibility alias
+Benchmarker = PerformanceBenchmarker
+

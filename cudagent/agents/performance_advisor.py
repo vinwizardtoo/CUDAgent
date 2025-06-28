@@ -563,4 +563,7 @@ Detailed Recommendations:
    {chr(10).join(f"   {j+1}. {step}" for j, step in enumerate(rec.implementation_steps))}
 """
         
-        return report 
+        return report
+
+# Add backward compatibility alias
+PerformanceAdvisor = PerformanceAdvisorAgent 

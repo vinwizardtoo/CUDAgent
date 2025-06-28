@@ -495,4 +495,7 @@ class KernelOptimizationAgent:
     
     def clear_history(self):
         """Clear parameter optimization history."""
-        self.parameter_history.clear() 
+        self.parameter_history.clear()
+
+# Add backward compatibility alias
+KernelOptimizer = KernelOptimizationAgent 
