@@ -12,6 +12,17 @@ Playground UI for CUDAgent. This is a minimal scaffold using Next.js App Router.
 
 The playground is at `/playground` and currently uses a fake run that simulates compile/validate timings. Backend wiring will hook this to the CLI/FastAPI service in `apps/cli`.
 
+### Modes
+- Coach Mode (`/coach`): Describe goals in natural language; the system proposes kernels, compiles, validates, and benchmarks. The current UI has a stubbed chat; wire it to the backend for real runs.
+- Pro Mode (`/playground`): Edit kernel/config directly and run. Currently simulates output.
+
+### Intended Backend API (sketch)
+- POST `/v1/coach/plan` → { messages: Message[] } → returns a structured plan and next actions.
+- POST `/v1/coach/execute` → { action } → triggers compile/validate/benchmark; streams progress.
+- POST `/v1/run` → { kernel, config } → runs a single compile/validate/benchmark.
+
+Prefer server-sent events (SSE) or chunked responses for progress streaming; add CORS or use Next rewrites.
+
 ### Deploy to Vercel (Monorepo)
 
 When importing this repo in Vercel:
@@ -20,6 +31,7 @@ When importing this repo in Vercel:
 - Install Command: leave default (npm ci / npm install).
 - Build Command: leave default (`next build`).
 - Environment Variables: add `NEXT_PUBLIC_API_BASE_URL` (see `.env.example`).
+  - Prefer `API_BASE_URL` for server-side proxy (see Proxy below).
 
 Branch behavior:
 - Production: set to your `main` branch.
@@ -27,7 +39,14 @@ Branch behavior:
 
 Notes:
 - Next.js requires Node >= 18.17.0 (covered by `.nvmrc`). Vercel uses a compatible version automatically.
-- If your backend isn’t on Vercel, calls should use the full `NEXT_PUBLIC_API_BASE_URL`.
+- If your backend isn’t on Vercel, either call `/api/...` (proxy) or use the full `NEXT_PUBLIC_API_BASE_URL`.
+
+### Proxy backend (recommended)
+We proxy browser calls to the backend via Next rewrites to avoid CORS:
+
+- Config: set `API_BASE_URL` in env (defaults to `http://localhost:8000`).
+- Client code: call relative paths like `/api/v1/run` instead of hardcoding the backend host.
+- Vercel: set `API_BASE_URL` to your backend’s public URL in Project Settings.
 
 ### Structure
 
