@@ -6,9 +6,14 @@ export default function Home() {
       <h1>CUDAgent</h1>
       <p className="muted">Agentic playground for GPU kernel optimization.</p>
       <div style={{ height: 20 }} />
-      <Link href="/playground">
-        <button>Open Playground</button>
-      </Link>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <Link href="/playground">
+          <button>Open Playground (Pro)</button>
+        </Link>
+        <Link href="/coach">
+          <button>Open Coach Mode</button>
+        </Link>
+      </div>
       <div style={{ height: 24 }} />
       <p className="muted">
         Backend/API wiring comes later. For now, experiment locally in the UI.
@@ -16,4 +21,3 @@ export default function Home() {
     </main>
   );
 }
-
