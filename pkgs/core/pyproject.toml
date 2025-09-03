@@ -1,0 +1,15 @@
+[project]
+name = "cuda-agent-core"
+version = "0.1.0"
+description = "Core utilities for CUDAgent (LLM, logging, config)"
+requires-python = ">=3.11"
+dependencies = [
+    "litellm>=1.41.0",
+    "tenacity>=8.2.3",
+    "pydantic>=2.6.0",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
