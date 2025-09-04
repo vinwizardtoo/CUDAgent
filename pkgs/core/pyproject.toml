@@ -4,12 +4,12 @@ version = "0.1.0"
 description = "Core utilities for CUDAgent (LLM, logging, config)"
 requires-python = ">=3.11"
 dependencies = [
-    "litellm>=1.41.0",
+    # Many environments only see 0.x releases on PyPI mirrors. This range
+    # keeps compatibility while allowing future 1.x once available.
+    "litellm>=0.1.236,<2",
     "tenacity>=8.2.3",
-    "pydantic>=2.6.0",
 ]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
-

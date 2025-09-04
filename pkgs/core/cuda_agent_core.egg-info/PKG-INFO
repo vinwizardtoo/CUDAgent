@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: cuda-agent-core
+Version: 0.1.0
+Summary: Core utilities for CUDAgent (LLM, logging, config)
+Requires-Python: >=3.11
+Requires-Dist: litellm<2,>=0.1.236
+Requires-Dist: tenacity>=8.2.3

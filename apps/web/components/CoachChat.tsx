@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import Markdown from '@/components/Markdown';
 
 type Role = 'user' | 'assistant' | 'system';
 interface Message {
@@ -35,45 +36,87 @@ export default function CoachChat() {
     setInput('');
     setSending(true);
 
-    // Stubbed assistant flow; replace with backend call (streaming preferred)
-    const fakeAssistant: Message = {
-      id: crypto.randomUUID(),
-      role: 'assistant',
-      content: [
-        'Plan:\n1) Gather shapes/dtype and constraints',
-        '2) Propose kernels (Triton, fallback CUDA)',
-        '3) Compile and validate vs PyTorch baseline',
-        '4) Search tuning space (BLOCK_SIZE, num_warps, etc.)',
-        '5) Benchmark and report latency/throughput; export artifacts',
-        '',
-        'First proposal: Triton softmax with BLOCK_SIZE=128, num_warps=4. Want me to compile and run 1000 reps?',
-      ].join('\n'),
-    };
+    // Start an assistant message that we'll fill as we stream
+    const assistantId = crypto.randomUUID();
+    setMessages((m) => [...m, { id: assistantId, role: 'assistant', content: '' }]);
 
-    // Simulate latency
-    await new Promise((r) => setTimeout(r, 500));
-    setMessages((m) => [...m, fakeAssistant]);
-    setSending(false);
+    try {
+      const res = await fetch('/api/v1/coach/plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            ...messages.map(({ role, content }) => ({ role, content })),
+            { role: 'user', content: userMsg.content },
+          ],
+          temperature: 0.2,
+        }),
+      });
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split('\n\n');
+        buffer = events.pop() || '';
+        for (const evt of events) {
+          const lines = evt.split('\n');
+          for (const ln of lines) {
+            if (!ln.startsWith('data:')) continue;
+            // Preserve spaces in streamed deltas; remove only the first space after 'data:' if present
+            let raw = ln.slice(5); // keep leading space if present
+            if (raw.startsWith(' ')) raw = raw.slice(1);
+            if (raw.trim() === '[DONE]') continue;
+
+            // Try to parse JSON events (status/error), but do NOT trim normal text chunks
+            let delta = '';
+            const jsonProbe = raw.trimStart();
+            if (jsonProbe.startsWith('{') || jsonProbe.startsWith('[')) {
+              try {
+                const obj = JSON.parse(jsonProbe);
+                if (obj?.error) delta = `\n[error] ${obj.error}`;
+                // ignore status pings
+              } catch {
+                delta = raw; // fall back to raw text
+              }
+            } else {
+              delta = raw;
+            }
+
+            if (delta) {
+              setMessages((m) =>
+                m.map((msg) => (msg.id === assistantId ? { ...msg, content: msg.content + delta } : msg))
+              );
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId
+            ? { ...msg, content: msg.content + `\n[error] ${err?.message || 'stream failed'}` }
+            : msg
+        )
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
     <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: 12, height: '75vh' }}>
-      <div ref={scroller} style={{ overflowY: 'auto', flex: 1, paddingRight: 6 }}>
+      <div ref={scroller} style={{ overflowY: 'auto', flex: 1, paddingRight: 6 }} aria-live="polite">
         {messages.map((msg) => (
           <div key={msg.id} style={{ marginBottom: 10 }}>
             <div className="muted" style={{ fontSize: 12, marginBottom: 4 }}>
               {msg.role.toUpperCase()}
             </div>
-            <div
-              style={{
-                whiteSpace: 'pre-wrap',
-                background: msg.role === 'user' ? '#0f172a' : '#121826',
-                border: '1px solid #1f2937',
-                borderRadius: 8,
-                padding: 10,
-              }}
-            >
-              {msg.content}
+            <div className={`chat-bubble ${msg.role === 'user' ? 'user' : 'assistant'}`}>
+              <Markdown>{msg.content}</Markdown>
             </div>
           </div>
         ))}
@@ -98,4 +141,3 @@ export default function CoachChat() {
     </div>
   );
 }
-
