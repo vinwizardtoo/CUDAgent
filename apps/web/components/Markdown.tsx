@@ -14,11 +14,13 @@ type Props = {
 };
 
 export default function Markdown({ children }: Props) {
+  // Work around type incompatibilities between rehype-highlight and unified/vfile types
+  // seen in some builds (nested vfile versions). Keep runtime behavior identical.
+  const rehypePluginsSafe = [rehypeHighlight as unknown as any];
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      // Cast to avoid TS type mismatches across unified/vfile versions in rehype-highlight
-      rehypePlugins={[rehypeHighlight as unknown as any]}
+      rehypePlugins={rehypePluginsSafe as unknown as any}
       components={{
         code({ inline, className, children, ...props }) {
           const lang = /language-(\w+)/.exec(className || "")?.[1];
