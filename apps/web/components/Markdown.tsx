@@ -22,13 +22,19 @@ export default function Markdown({ children }: Props) {
       remarkPlugins={[remarkGfm]}
       rehypePlugins={rehypePluginsSafe as unknown as any}
       components={{
-        code({ inline, className, children, ...props }) {
+        // Version-agnostic code renderer:
+        // - react-markdown v8: receives `inline` on `code`
+        // - react-markdown v9: inline code uses `inlineCode`; `code` is block-only
+        // Use `any` to avoid TS type churn across versions in CI.
+        code(props: any) {
+          const { className, children, ...rest } = props || {};
           const lang = /language-(\w+)/.exec(className || "")?.[1];
           const text = String(children ?? "");
           const trimmed = text.replace(/\n$/, "");
-          if (inline) {
+          const isInline = Boolean((props as any)?.inline) || (!className && !/\n/.test(text));
+          if (isInline) {
             return (
-              <code className="md-inline-code" {...props}>
+              <code className="md-inline-code" {...rest}>
                 {trimmed}
               </code>
             );
@@ -40,7 +46,7 @@ export default function Markdown({ children }: Props) {
                 <CopyButton text={trimmed} />
               </div>
               <pre className="md-code-block">
-                <code className={className || (lang ? `language-${lang}` : undefined)} {...props}>
+                <code className={className || (lang ? `language-${lang}` : undefined)} {...rest}>
                   {trimmed}
                 </code>
               </pre>
