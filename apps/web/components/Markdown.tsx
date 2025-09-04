@@ -17,7 +17,8 @@ export default function Markdown({ children }: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeHighlight]}
+      // Cast to avoid TS type mismatches across unified/vfile versions in rehype-highlight
+      rehypePlugins={[rehypeHighlight as unknown as any]}
       components={{
         code({ inline, className, children, ...props }) {
           const lang = /language-(\w+)/.exec(className || "")?.[1];
