@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
-const API_BASE = process.env.API_BASE_URL || 'http://localhost:8000';
+// Default to IPv4 to avoid macOS localhost -> ::1 issues
+const API_BASE = process.env.API_BASE_URL || 'http://127.0.0.1:8000';
 
 const nextConfig = {
   reactStrictMode: true,

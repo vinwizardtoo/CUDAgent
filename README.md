@@ -36,7 +36,12 @@ cuda-agent/
 Prerequisites
 - NVIDIA GPU + drivers, recent CUDA toolkit matching your PyTorch/Triton.
 - Python 3.11+ and uv (workspace manager).
+- Node.js >= 18.17.0 for the web UI (see `.nvmrc`).
 - Optional: Docker with `--gpus all` runtime.
+
+LLM (Coach Mode)
+- Uses LiteLLM to call ChatGPT-compatible endpoints with retries/backoff.
+- Set `OPENAI_API_KEY` in your environment (see `.env.example`).
 
 Setup
 - make setup
@@ -44,7 +49,9 @@ Setup
 Run locally
 - make dev
   - Starts FastAPI/CLI backend and dev helpers.
-  - Start the UI from `apps/web` if not wired: `npm install && npm run dev`.
+  - UI: run web commands from inside `apps/web` (do not run `npm install` from repo root):
+    - `cd apps/web && npm install`
+    - `npm run dev`
 
 Try examples
 - uv run python examples/tune_softmax_4090.py
@@ -58,6 +65,31 @@ Testing and linting
 Docker (reproducible env)
 - docker build -f docker/dev.Dockerfile -t cuda-agent-dev .
 - docker run --gpus all -it -v $PWD:/workspace cuda-agent-dev
+
+## Web UI
+- Location: `apps/web` (Next.js App Router)
+- Development:
+  - `cd apps/web && npm install`
+  - `npm run dev` then open http://localhost:3000 (playground at `/playground`)
+
+Note: npm commands must be run from `apps/web`, not the repository root.
+
+Node version: Next.js requires Node >= 18.17.0. Use nvm/asdf/volta:
+- nvm: `nvm install` (reads `.nvmrc`) then `nvm use`
+- asdf: respects `.node-version`
+- Volta: `volta pin node@18.17.0` (optional)
+
+### Deploy to Vercel
+- Import the repo into Vercel and set Root Directory to `apps/web`.
+- Keep default Next.js build settings; add env `NEXT_PUBLIC_API_BASE_URL` if calling an external backend.
+- Production deploys from `main`; feature branches (e.g., `feat/webdev`) get Preview URLs.
+
+### Planned Makefile shortcuts (future)
+To simplify web workflows from the repo root, we plan to add:
+- `make web-install` → `cd apps/web && npm install`
+- `make web-dev` → `cd apps/web && npm run dev`
+- `make web-build` → `cd apps/web && npm run build`
+
 
 ## Concepts
 - IR and Runtime: canonical op descriptions feed compilation/execution.
